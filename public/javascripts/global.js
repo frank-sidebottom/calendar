@@ -5,7 +5,7 @@ var userListData = [];
 $(document).ready(function(){
 
 	//populate the table on page load
-	populateTable();
+	//populateTable();
 
 	//Username Link Click
 	$('#userList table tbody').on('click', 'td a.linkshowuser', showUserInfo);
@@ -17,7 +17,7 @@ $(document).ready(function(){
     $('#userList table tbody').on('click', 'td a.linkdeleteuser', deleteUser);
 
     $('#calendar').fullCalendar({
-       events: '/users/userlist'
+       events: '/users/calendarevents'
     });
 });
 

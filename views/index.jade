@@ -1,54 +1,18 @@
 extends layout
-
+ 
 block content
-  h1= title
-  p Welcome to our test
-
-  //Wrapper
-  #wrapper
-    // USER INFO
-    #userInfo
-      h2 User Info
-      p
-        strong Name:
-        |  <span id='userInfoName'></span>
-        br
-        strong Age:
-        |  <span id='userInfoAge'></span>
-        br
-        strong Gender:
-        |  <span id='userInfoGender'></span>
-        br
-        strong Location:
-        |  <span id='userInfoLocation'></span>
-    // /USER INFO
-
-    //USER LIST
-    h2 User List
-    #userList
-      table
-        thead
-          th UserName
-          th Email
-          th Delete?
-        tbody
-    // /USER LIST
-    // ADD USER
-    h2 Add User
-    #addUser
-      fieldset
-        input#inputUserName(type='text', placeholder='Username')
-        input#inputUserEmail(type='text', placeholder='Email')
-        br
-        input#inputUserFullname(type='text', placeholder='Full Name')
-        input#inputUserAge(type='text', placeholder='Age')
-        br
-        input#inputUserLocation(type='text', placeholder='Location')
-        input#inputUserGender(type='text', placeholder='gender')
-        br
-        button#btnAddUser Add User
-    // /ADD USER
-    h2 Calendar
-    #calendar
-
-  // /WRAPPER
+  div.container
+    div.row
+      div.col-sm-6.col-md-4.col-md-offset-4
+        h1.text-center.login-title Sign in to our Passport app
+          div.account-wall
+            img(class='profile-img', src='https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120')
+            form(class='form-signin', action='/login', method='POST')
+              input(type='text', name='username' class='form-control', placeholder='Email',required, autofocus)
+              input(type='password', name='password' class='form-control', placeholder='Password', required)
+              button(class='btn btn-lg btn-primary btn-block', type='submit') Sign in
+              span.clearfix
+          a(href='/signup', class='text-center new-account') Create an account
+          #message
+          if message
+            h1.text-center.error-message #{message}

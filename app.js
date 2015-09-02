@@ -6,11 +6,12 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 //Database
 var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/cal2');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+//var monk = require('monk');
+//var db = monk('localhost:27017/cal2');
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/cal2');
 
 var app = express();
 
@@ -26,11 +27,29 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//
-app.use(function(req, res, next) {
-  req.db = db;
-  next();
-});
+var passport = require('passport');
+var expressSession = require('express-session');
+app.use(expressSession({secret: 'fractal'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+ // Using the flash middleware provided by connect-flash to store messages in session
+ // and displaying in templates
+var flash = require('connect-flash');
+app.use(flash());
+
+// Initialize Passport
+var initPassport = require('./passport/init');
+initPassport(passport);
+
+var routes = require('./routes/index')(passport);
+var users = require('./routes/users');
+
+
+//app.use(function(req, res, next) {
+  //req.db = db;
+//  next();
+//});
 
 app.use('/', routes);
 app.use('/users', users);
