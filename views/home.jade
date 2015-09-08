@@ -9,3 +9,26 @@ block content
 						a(href='/signout', class='text-center new-account') Sign Out
 	div.container
 		div#calendar
+	div#addevent
+		form(class='form-addevent', id='addEventForm', action='', method='POST')
+			input(type='text', name='title', class='form-control', id='title', placeholder='Event Title', required)
+			input(type='text', name='Description', class='form-control nomargin',id='description', placeholder='Description')
+			input(type='text', name='start', class='form-control', id='start',placeholder='#{date}',required)
+			input(type='text', name='end', class='form-control', id='end',placeholder='End Date yyyy-mm-dd')
+			input(type='text', name='tags', class='form-control', id='tags',placeholder='tags')
+			input(type='text', name='url', class='form-control', id='url',placeholder='URL/Tracking URL')
+			input(type='text', name='drivesto', class='form-control', id='drivesto',placeholder='Is Driving To')
+			input(type='text', name='notes', class='form-control',id='notes', placeholder='Notes')
+			input(type='submit', class='btn btn-lg btn-primary btn-block', id='createevent', value='Create Event')
+			span.clearfix
+	div#editevent
+		h3#eventtitle
+		p#eventdescription Description
+		p#eventstart 
+		p#eventend
+		p#eventtags
+		p#eventurl
+		p#eventdrivesto
+		p#eventnotes
+			
+			

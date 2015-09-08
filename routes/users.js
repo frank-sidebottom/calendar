@@ -9,7 +9,7 @@ var Calendarevent = require('../models/Calendarevent');
 
 router.get('/calendarevents', function(req, res) {
 	Calendarevent.find({}, function(err, calendarEvents){
-		console.log(calendarEvents + " :calendar");
+		//console.log(calendarEvents + " :calendar");
 		res.send(calendarEvents);
 	});
 	//Test Event
@@ -24,6 +24,14 @@ router.get('/calendarevents', function(req, res) {
 	// 	else console.log("Fuck you");
 	// });
 });
+
+router.post('/addevent', function(req, res){
+	Calendarevent.create(req.body, function(err, event){
+		if (err) return handleError(err);
+	})
+});
+
+
 
 /*
  * Post to adduser
