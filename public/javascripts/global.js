@@ -1,12 +1,13 @@
 //Userlist data array for filling in info box
 var userListData = [];
 var eventDate = '';
+var calendars = [];
+var calendarsDisplayList = [];
 
 //DOM ready========================================
 $(document).ready(function(){
 
-	//populate the table on page load
-	//populateTable();
+
 
     dialog = $("#addevent").dialog({
     autoOpen: false,
@@ -23,12 +24,12 @@ $(document).ready(function(){
     });//end dialog
 
 
-	// Add User button click
+	// Add Event button click
     $('#createevent').on('click', createEvent);
 
 
     $('#calendar').fullCalendar({
-       events: '/users/calendarevents',
+       //events: '/users/calendarevents',
        editable: true,
 
        //day Click modal
@@ -54,52 +55,38 @@ $(document).ready(function(){
        }//end eventClick
 
     });//end fullCalendar
+
+    $.getJSON('/calendars', function(data){
+
+            $.each(data, function(){
+            calendars.push(data);
+            
+        });
+    
+
+        //console.log('val of calendars[0]: ' + calendars[0]);
+        var cals = calendars[0];
+
+        for (var i = 0; i < cals.length; i++) {
+            calendarsDisplayList.push(cals[i]);
+            console.log('in loop :' + calendarsDisplayList);
+        };
+        for(var i = 0; i < calendarsDisplayList.length; i++){
+
+                 $('#calendar-dropdown').append($('<option>', {
+                    value: calendarsDisplayList[i],
+                    text: calendarsDisplayList[i]
+                 }));
+
+        };
+    });
+
+    $('#calendar-choice-submit').on('click', calendarChoiceSubmit);
+
 });//end doc.ready
 
 // Functions ========================================
 
-
-
-
-// //Fill table with data
-// function populateTable(){
-// 	//empty content string
-// 	var tableContent = "";
-
-// 	$.getJSON('/users/userlist', function(data){
-// 		// For each item in our JSON, add a table row and cells to the content string
-// 		$.each(data, function(){
-// 			userListData = data;
-// 			tableContent += '<tr>';
-// 			tableContent += '<td><a href="#" class="linkshowuser" rel="' + this.username + '">' + this.username + '</a></td>';
-// 			tableContent += '<td>' + this.email + '</td>';
-//             tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this._id + '">delete</a></td>';
-//             tableContent += '</tr>';
-// 		});
-// 		$('#userList table tbody').html(tableContent);
-// 	});
-// };
-
-// function showUserInfo(event){
-
-// 	//prevent link from firing
-// 	event.preventDefault();
-
-// 	// Retrieve username from link rel attribute
-// 	var thisUserName = $(this).attr('rel');
-
-// 	// Get Index of object based on id value
-// 	var arrayPosition = userListData.map(function(arrayItem) { return arrayItem.username; }).indexOf(thisUserName);
-// 	// Get our User Object
-// 	var thisUserObject = userListData[arrayPosition];
-
-// 	//Populate Info Box
-// 	$('#userInfoName').text(thisUserObject.fullname);
-//     $('#userInfoAge').text(thisUserObject.age);
-//     $('#userInfoGender').text(thisUserObject.gender);
-//     $('#userInfoLocation').text(thisUserObject.location);
-
-// };
 
 function createEvent(event){
     event.preventDefault();
@@ -242,6 +229,16 @@ function deleteUser(event) {
     }
 
 };
+
+function calendarChoiceSubmit(){
+
+    name = $('#calendar-dropdown').val()
+
+    $('#calendar').fullCalendar({
+        events: '/users/calendarevents'
+    })
+
+}
 
 
 

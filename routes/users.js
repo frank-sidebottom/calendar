@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var Calendarevent = require('../models/Calendarevent');
+var UserList = require('../models/user');
+var mongoose = require('mongoose');
+var circular = require('circular');
+
 //console.log(Calendarevent);
 
 /*
@@ -24,14 +28,67 @@ router.get('/calendarevents', function(req, res) {
 	// 	else console.log("Fuck you");
 	// });
 });
-
+//!!!!Dynamic Calendars are possible!!!
 router.post('/addevent', function(req, res){
-	Calendarevent.create(req.body, function(err, event){
+	var newModel = mongoose.model('newCal', Calendarevent.schema);
+	newModel.create(req.body, function(err, event){
 		if (err) return handleError(err);
 	})
 });
 
+router.get('/userlist', function(req, res){
+	UserList.find({}, function(err, users){
+		res.send(users);
+	})
+});
 
+
+router.get('/collectionslist', function(req, res){
+	//console.log('collectionslist route called');
+	var database = mongoose.createConnection('mongodb://localhost/cal2');
+	database.once('open', function (ref) {
+	//console.log('database opened');
+	   database.db.collections(function (err, names) {
+	        //console.log("names: " + names); // [{ name: 'dbname.myCollection' }]
+	        var str = JSON.stringify(names, circular());
+	        //console.log(str);
+	        
+	       	res.send(str);
+	        //module.exports.Collection = names;
+	    });
+	})
+
+		
+})
+
+
+
+router.put('/updateUserCalendars/', function(req, res){
+	console.log(req.body);
+	console.log(req.body.userSelect + '.........' + req.body.calendarsSelect);
+	UserList.findOne({username: req.body.userSelect}, function(err, doc){
+
+		if (err) console.log('error finding document');
+
+		console.log("Document: " + doc);
+
+		//clear all currently assigned dbs
+		doc.accessibleDbs = [];
+		doc.save();
+
+		for(i = 0; i < req.body.calendarsSelect.length; i++){
+
+
+			doc.accessibleDbs.push(req.body.calendarsSelect[i]);
+
+			//doc.save(console.log(doc + ' Success'));
+			console.log("accessible Dbs: " + doc.accessibleDbs);
+		}
+		console.log("Document post addition: " + doc);
+		doc.save();
+	});
+
+});
 
 /*
  * Post to adduser

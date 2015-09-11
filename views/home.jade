@@ -8,6 +8,11 @@ block content
 					h3.text-center.login-title Welcome #{user.firstName}.
 						a(href='/signout', class='text-center new-account') Sign Out
 	div.container
+		h3 Calendar List
+		form
+			select(name='Calendar List', id='calendar-dropdown')
+				option(value='', class='calendar-option')
+			input(type='submit', id='calendar-choice-submit')
 		div#calendar
 	div#addevent
 		form(class='form-addevent', id='addEventForm', action='', method='POST')

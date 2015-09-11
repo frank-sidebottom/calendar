@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var UserList = require('../models/user')
 
 var isAuthenticated = function (req, res, next) {
 	// if user is authenticated in the session, call the next() to call the next request handler 
@@ -9,6 +10,13 @@ var isAuthenticated = function (req, res, next) {
 		return next();
 	// if the user is not authenticated then redirect him to the login page
 	res.redirect('/');
+}
+
+var isAdmin = function(req, res, next) {
+  if (req.user.username == 'Fractal')
+    return next();
+
+  res.redirect('/');
 }
 
 module.exports = function(passport){
@@ -26,6 +34,11 @@ module.exports = function(passport){
 			user: req.user
 			 });
 	});
+
+  /* GET Admin page */
+  router.get('/admin', isAuthenticated, isAdmin, function(req, res){
+    res.render('admin');
+  })
 
  
   /* Handle Login POST */
@@ -46,6 +59,16 @@ module.exports = function(passport){
     failureRedirect: '/signup',
     failureFlash : true 
   }));
+
+  //Fetch calendars for display
+  router.get('/calendars', function(req, res){
+    var userLoadCalendars = req.user.username;
+    UserList.findOne({username: req.user.username}, function(err, doc){
+      if (err) console.log('error finding document');
+      console.log('/calendars route accessibleDbs: ' + doc.accessibleDbs);
+      res.send(doc.accessibleDbs);
+    })
+  })
 
   /* Handle Logout */
 router.get('/signout', function(req, res) {

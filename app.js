@@ -45,11 +45,11 @@ initPassport(passport);
 var routes = require('./routes/index')(passport);
 var users = require('./routes/users');
 
-
-//app.use(function(req, res, next) {
-  //req.db = db;
-//  next();
-//});
+//!!!!!!Is sending something to the req object, but possibly not a db connection
+app.use(function(req, res, next) {
+  req.db = mongoose.connection;
+  next();
+});
 
 app.use('/', routes);
 app.use('/users', users);

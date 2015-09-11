@@ -1,0 +1,18 @@
+extends layout
+
+block content
+	h1 This is an Admin Page
+	h3 Users List
+	p Select a user
+	form(method="POST")
+		select(name='UserList', id='user-list')
+			option(value='', class='user-option')
+		
+	br
+	h3 Calendar List
+	p Command-Click to assign multiple Calendars
+	form
+		select(name='Calendar List', id='calendar-list' multiple)
+			option(value='', class='calendar-option')
+		input(type='submit', id='calendar-submit')
+	script(src='/javascripts/admin.js')
