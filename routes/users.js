@@ -10,12 +10,18 @@ var circular = require('circular');
 /*
  * GET userlist.
  */
-
-router.get('/calendarevents', function(req, res) {
-	Calendarevent.find({}, function(err, calendarEvents){
+//HERE!!!!!!!!!+++++++++++++++++++
+router.get('/calendarevents/:name', function(req, res) {
+	var calName = req.params.name;
+	if (calName != null){
+		var newModel = mongoose.model(calName, Calendarevent.schema);
+			newModel.find({}, function(err, calendarEvents){
 		//console.log(calendarEvents + " :calendar");
-		res.send(calendarEvents);
-	});
+			res.send(calendarEvents);
+		});
+	};
+
+
 	//Test Event
 	// var testEvent = new Calendarevent ({
 	// 	title: "Test Event",
@@ -28,12 +34,17 @@ router.get('/calendarevents', function(req, res) {
 	// 	else console.log("Fuck you");
 	// });
 });
-//!!!!Dynamic Calendars are possible!!!
+
+
+//!!!!Dynamic Calendars are possible!!!NEXT ADD THIS DYNAMIC FUNC TO /calendarevents route
 router.post('/addevent', function(req, res){
-	var newModel = mongoose.model('newCal', Calendarevent.schema);
-	newModel.create(req.body, function(err, event){
-		if (err) return handleError(err);
-	})
+	var calName = req.body.calendar;
+	if (calName != null){
+		var newModel = mongoose.model(calName, Calendarevent.schema);
+		newModel.create(req.body, function(err, event){
+			if (err) return handleError(err);
+		})
+	}
 });
 
 router.get('/userlist', function(req, res){
@@ -64,13 +75,13 @@ router.get('/collectionslist', function(req, res){
 
 
 router.put('/updateUserCalendars/', function(req, res){
-	console.log(req.body);
-	console.log(req.body.userSelect + '.........' + req.body.calendarsSelect);
+	//console.log(req.body);
+	//console.log(req.body.userSelect + '.........' + req.body.calendarsSelect);
 	UserList.findOne({username: req.body.userSelect}, function(err, doc){
 
 		if (err) console.log('error finding document');
 
-		console.log("Document: " + doc);
+		//console.log("Document: " + doc);
 
 		//clear all currently assigned dbs
 		doc.accessibleDbs = [];
@@ -82,11 +93,50 @@ router.put('/updateUserCalendars/', function(req, res){
 			doc.accessibleDbs.push(req.body.calendarsSelect[i]);
 
 			//doc.save(console.log(doc + ' Success'));
-			console.log("accessible Dbs: " + doc.accessibleDbs);
+			//console.log("accessible Dbs: " + doc.accessibleDbs);
 		}
-		console.log("Document post addition: " + doc);
+		//console.log("Document post addition: " + doc);
 		doc.save();
 	});
+
+});
+
+
+router.put('/editevent', function(req, res) {
+	console.log(req.body);
+	var eventDat = req.body.newData;
+	console.log('eventDat: ' + eventDat);
+	if(eventDat != null){
+		console.log('Datum is not null');
+		var eventObject = JSON.parse(req.body.event);
+		console.log(eventObject);
+		var calName = eventObject.calendar;
+		var newModel = mongoose.model(calName, Calendarevent.schema);
+		newModel.findById(eventObject._id, function(err, doc){
+			//console.log('in the findById');
+			//this won't work
+			var eventParam = req.body.eventParam;
+			//console.log('eventParam: ');
+			//console.log(eventParam);
+			//doc.eventParam = eventDat;
+			//console.log('doc.eventParam :');
+			//console.log(doc.eventParam);
+			doc.set(eventParam, eventDat);
+			doc.save();
+			//console.log('doc: ');
+			//console.log(doc);
+			
+			if (err) console.log('error: ' + err);
+		});
+		//var query = { _id : eventObject._id };
+		//newModel.update(query, { eventParam: eventDat}, options, callback);
+
+	res.send('fuck');	
+
+	}
+
+//!!!!!How do I do this again?
+
 
 });
 

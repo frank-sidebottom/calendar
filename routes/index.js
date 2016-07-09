@@ -65,7 +65,7 @@ module.exports = function(passport){
     var userLoadCalendars = req.user.username;
     UserList.findOne({username: req.user.username}, function(err, doc){
       if (err) console.log('error finding document');
-      console.log('/calendars route accessibleDbs: ' + doc.accessibleDbs);
+      //console.log('/calendars route accessibleDbs, loads up available user calendars for dropdown: ' + doc.accessibleDbs);
       res.send(doc.accessibleDbs);
     })
   })

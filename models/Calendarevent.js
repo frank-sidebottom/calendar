@@ -10,7 +10,8 @@ var Calendarevent = new Schema({
   tags: String,
   urlTrackingurl: String,
   isDrivingTo: String,
-  notes: String
+  notes: String,
+  calendar: String
 });
 //move this to a route on index.js, make model module.exports and 
 //use an ajax posted var to pick the db.

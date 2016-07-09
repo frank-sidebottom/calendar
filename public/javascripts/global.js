@@ -3,6 +3,9 @@ var userListData = [];
 var eventDate = '';
 var calendars = [];
 var calendarsDisplayList = [];
+var dynamicEvents = '';
+var testCalendar = '/users/calendarevents/calendarevents/';
+var selectedEvent = {};
 
 //DOM ready========================================
 $(document).ready(function(){
@@ -23,13 +26,28 @@ $(document).ready(function(){
     modal: true
     });//end dialog
 
+    editDialog = $("#editDialog").dialog({
+    autoOpen: false,
+    height: 500,
+    width: 650,
+    modal: true
+    });//end dialog
 
 	// Add Event button click
     $('#createevent').on('click', createEvent);
+    //on click of
+    //$('.editeventfield').on('click', editEvent);
+    $('.editeventfield').on('click', function() {
+  editEvent(this.id);
 
+});
+
+
+
+//Does this need to be here? *!*!*!!*!*!*!!**!!*!*!*!!
 
     $('#calendar').fullCalendar({
-       //events: '/users/calendarevents',
+       events: dynamicEvents,
        editable: true,
 
        //day Click modal
@@ -38,19 +56,20 @@ $(document).ready(function(){
         eventDate = moment(date).format("YYYY-MM-DD");
 
         $('#start').val(eventDate);
-       },//end dayclick 
+       },//end dayclick
 
        eventClick: function(event, jsEvent, view){
+            event.preventDefault();
             eventDialog.dialog("open");
             console.log(event.title, event.description, event.start);
-            $('#eventtitle').text(event.title);
-            $('#eventdescription').text(event.description);
-            $('#eventstart').text(event.start);
-            $('#eventend').text(event.end);
-            $('#eventtags').text(event.tags);
-            $('#eventurl').text(event.urlTrackingUrl);
-            $('#eventdrivesto').text(event.isDrivingTo);
-            $('#eventnotes').text(event.notes);
+            $('#title-anchor').text(event.title);
+            $('#description-anchor').text(event.description);
+            $('#start-anchor').text(event.start);
+            $('#end-anchor').text(event.end);
+            $('#tags-anchor').text(event.tags);
+            $('#url-anchor').text(event.urlTrackingUrl);
+            $('#drivesto-anchor').text(event.isDrivingTo);
+            $('#notes-anchor').text(event.notes);
 
        }//end eventClick
 
@@ -60,16 +79,16 @@ $(document).ready(function(){
 
             $.each(data, function(){
             calendars.push(data);
-            
+
         });
-    
+
 
         //console.log('val of calendars[0]: ' + calendars[0]);
         var cals = calendars[0];
 
         for (var i = 0; i < cals.length; i++) {
             calendarsDisplayList.push(cals[i]);
-            console.log('in loop :' + calendarsDisplayList);
+            //console.log('in loop :' + calendarsDisplayList);
         };
         for(var i = 0; i < calendarsDisplayList.length; i++){
 
@@ -90,7 +109,7 @@ $(document).ready(function(){
 
 function createEvent(event){
     event.preventDefault();
-    
+
     var newEvent = {
 
     'title' : $('#title').val(),
@@ -100,7 +119,8 @@ function createEvent(event){
      'tags' : $('#tags').val(),
      'drivesto' : $('#drivesto').val(),
      'notes' : $('#notes').val(),
-     'url' : $('#url').val()
+     'url' : $('#url').val(),
+     'calendar' : $('#calendar-dropdown').val()
     }
 /*
 *
@@ -140,6 +160,7 @@ function addUser(event) {
     event.preventDefault();
 
     // Super basic validation - increase errorCount variable if any fields are blank
+    // Would this work after first error is made?
     var errorCount = 0;
     $('#addUser input').each(function(index, val) {
         if($(this).val() === '') { errorCount++; }
@@ -232,13 +253,92 @@ function deleteUser(event) {
 
 function calendarChoiceSubmit(){
 
-    name = $('#calendar-dropdown').val()
+    event.preventDefault();
 
+    var name = $('#calendar-dropdown').val()
+    var dynamicEvents = '/users/calendarevents/' + name + '/';
+    //console.log("events: " + dynamicEvents);
+    $('#calendar').fullCalendar( 'destroy' )
     $('#calendar').fullCalendar({
-        events: '/users/calendarevents'
+        events: dynamicEvents,//'/users/calendarevents/calendarevents/'
+               editable: true,
+
+       //day Click modal
+       dayClick: function(date, jsEvent, view){
+        dialog.dialog("open");
+        eventDate = moment(date).format("YYYY-MM-DD");
+
+        $('#start').val(eventDate);
+       },//end dayclick
+
+       eventClick: function(event, jsEvent, view){
+            selectedEvent = event;
+            //console.log("the event: " + selectedEvent);
+            eventDialog.dialog("open");
+            //console.log(event.title, event.description, event.start);
+            $('#title-anchor').text(event.title);
+            $('#description-anchor').text(event.description);
+            $('#start-anchor').text(event.start);
+            $('#end-anchor').text(event.end);
+            $('#tags-anchor').text(event.tags);
+            $('#url-anchor').text(event.urlTrackingUrl);
+            $('#drivesto-anchor').text(event.isDrivingTo);
+            $('#notes-anchor').text(event.notes);
+
+
+       }//end eventClick
+
     })
+
+
+
 
 }
 
+function editEvent(id){
+    //you haven't passed the id yet, dingus
+    event.preventDefault();
+    editDialog.dialog("open");
+    //take the value of the #id that was clicked and the unique identifyer of the object from the global var
+    //Package that in an object you send to the route through ajax lson stringify data
+    //Have the route access the unique id of the object and change the value of the field. How to identify the field?
+
+    //Dirty String manipulation to get the identifier of the event param to change
+    newParamId = id.replace('-anchor', '');
+    //console.log('new id: '+ newParamId);
+    $('#edit-event-submit').unbind('click').on('click', function(){
+        editEventSubmit(selectedEvent, newParamId, id);
+        //console.log('editEventSubmit called with params: selectedEvent: ' + selectedEvent + ' newParamId: ' + newParamId + ' id: ' + id);
+    });
+}
+
+function editEventSubmit(event, newParamId, id){
 
 
+        var eventData = $('#event-field').val()
+
+        var eventParam = newParamId;
+
+
+        var theData = {
+            'event' : JSON.stringify(selectedEvent),
+            'newData': eventData,
+            'eventParam': eventParam
+        }
+
+        var stringifiedData = JSON.stringify(theData);
+
+
+
+        $.ajax({
+        type: 'PUT',
+        data: theData,
+        url: '/users/editevent',
+        //contentType: 'application/json; charset=utf-8',
+        dataType: 'JSON'
+        })
+
+
+
+
+}

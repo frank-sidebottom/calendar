@@ -13,6 +13,7 @@ block content
 			select(name='Calendar List', id='calendar-dropdown')
 				option(value='', class='calendar-option')
 			input(type='submit', id='calendar-choice-submit')
+		button(type='submit', id='button', value='button')
 		div#calendar
 	div#addevent
 		form(class='form-addevent', id='addEventForm', action='', method='POST')
@@ -27,13 +28,17 @@ block content
 			input(type='submit', class='btn btn-lg btn-primary btn-block', id='createevent', value='Create Event')
 			span.clearfix
 	div#editevent
-		h3#eventtitle
-		p#eventdescription Description
-		p#eventstart 
-		p#eventend
-		p#eventtags
-		p#eventurl
-		p#eventdrivesto
-		p#eventnotes
+		h3 <a href='#' class='editeventfield' id='title-anchor' onclick='editEvent(this.id)'></a> 
+		p <a href='#' class='editeventfield' id='description-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='start-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='end-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='tags-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='urlTrackingurl-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='isDrivingTo-anchor' onclick='editEvent(this.id)'></a>
+		p <a href='#' class='editeventfield' id='notes-anchor' onclick='editEvent(this.id)'></a>
+	div#editDialog
+		form(class='form-editfield', id='editEventForm', action='', method='')
+			input(type='text', name='eventparameterfield', id='event-field', placeholder='')
+			input(type='submit', class='btn btn-lg btn-primary btn-block', id='edit-event-submit', value='Edit Field')
 			
 			
